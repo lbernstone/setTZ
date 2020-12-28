@@ -17,8 +17,14 @@ void handleTz() {
   File tzdb = SPIFFS.open(TzdbFile,"r");
   if (!tzdb) {
     server.send(404, "text/plain", "unable to open tzdb");
+    return;
   }
-  String html = "<html><body>";
+  String html;
+  if (html.reserve(tzdb.size() * 1.7) == 0) {
+    server.send(503, "text/plain", "insufficient memory");
+    return;
+  }
+  html = "<html><body>";
   html += "<form method='POST' action='set'>";
   html += "<label for='locale'>Timezone:</label>";
   html += "<select id='locale' name='locale'>";
